@@ -42,7 +42,7 @@ export default function Home() {
     }
   };
 
-  const projectTime = (s: Sample) => {
+  const getTimeRemaining = (s: Sample) => {
     if (startSample == null || s.ts === startSample.ts || s.value === startSample.value) return;
 
     const timeEllapsed = s.ts - startSample.ts;
@@ -51,7 +51,15 @@ export default function Home() {
     const timePerPlaces = timeEllapsed / placesEllapsed;
     const timeRemaining = timePerPlaces * s.value;
 
-    return new Date(Date.now() + timeRemaining);
+    return timeRemaining;
+  };
+
+  const formatTimeRemaining = (s: Sample) => {
+    const timeRemaining = getTimeRemaining(s);
+
+    if (timeRemaining == null) return `Starting at position ${s.value}`;
+
+    return `Estimated ${new Date(Date.now() + timeRemaining).toLocaleTimeString()}, position ${s.value}`;
   };
   
   return (
@@ -69,7 +77,7 @@ export default function Home() {
 
       {samples.toReversed().map((s, i) => (
         <div key={i}>
-          {new Date(s.ts).toLocaleTimeString()}&gt; {s.value} : {projectTime(s)?.toLocaleTimeString() ?? 'n/a'}
+          {new Date(s.ts).toLocaleTimeString()}&gt; {formatTimeRemaining(s)}
         </div>
       ))}
     </>
