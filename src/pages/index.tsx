@@ -10,19 +10,17 @@ export default function Home() {
 
   const [sample, setSample] = useState<'' | number>('');
   const [samples] = useState<Sample[]>([]);
-  const [startSample, setStartSample] = useState<undefined | Sample>();
 
   const sampleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (startSample != null) {
+    if (samples.length > 0) {
       const timerId = setInterval(() => {
         setCounter((prevCounter) => prevCounter + 1);
       }, 1000);
-
       return () => clearInterval(timerId);
     }
-  }, [counter, sample, startSample]);
+  }, [counter, sample]);
 
   const addSample = () => {
     if (sample == '') return;
@@ -32,9 +30,6 @@ export default function Home() {
       value: sample,
     };
     samples.push(s);
-    if (startSample == null) {
-      setStartSample(s);
-    }
     
     setSample('');
     if (sampleRef.current) {
@@ -43,10 +38,10 @@ export default function Home() {
   };
 
   const getTimeRemaining = (s: Sample) => {
-    if (startSample == null || s.ts === startSample.ts || s.value === startSample.value) return;
+    if (samples.length <= 1 || s.ts === samples[samples.length - 1].ts || s.value === samples[samples.length - 1].value) return;
 
-    const timeEllapsed = s.ts - startSample.ts;
-    const placesEllapsed = startSample.value - s.value;
+    const timeEllapsed = samples[samples.length - 1].ts - s.ts;
+    const placesEllapsed = s.value - samples[samples.length - 1].value;
 
     const timePerPlaces = timeEllapsed / placesEllapsed;
     const timeRemaining = timePerPlaces * s.value;
@@ -57,9 +52,9 @@ export default function Home() {
   const formatTimeRemaining = (s: Sample) => {
     const timeRemaining = getTimeRemaining(s);
 
-    if (timeRemaining == null) return `Starting at position ${s.value}`;
+    if (timeRemaining == null || isNaN(timeRemaining)) return `Last position ${s.value}`;
 
-    return `Estimated ${new Date(Date.now() + timeRemaining).toLocaleTimeString()}, position ${s.value}`;
+    return `${new Date(Date.now() + timeRemaining).toLocaleTimeString()} based on positions ${samples[samples.length - 1].value}-${s.value}`;
   };
   
   return (
