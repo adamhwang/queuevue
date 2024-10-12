@@ -68,7 +68,7 @@ export default function Home() {
       <input
         type="number"
         className='mx-2'
-        value={sample}
+        value={sample || ''}
         onChange={(e) => setSample(+e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && addSample()}
         ref={sampleRef}
