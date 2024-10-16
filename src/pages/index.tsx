@@ -14,6 +14,18 @@ export default function Home() {
   const sampleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    const handleFocus = () => sampleRef.current && sampleRef.current.focus();
+
+    handleFocus();
+
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
+  useEffect(() => {
     if (samples.length > 0) {
       const timerId = setInterval(() => {
         setCounter((prevCounter) => prevCounter + 1);
